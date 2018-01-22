@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         Observable<String> observableFrom = Observable.fromArray(data);
 
 
-        // 2. 구독자
+        // 2. subscirbe 에제코드
 //        observableFrom.subscribe(new Consumer<String>() {    // onNext 데이터가 있으면 호출된다
 //            @Override
 //            public void accept(String s) throws Exception {
@@ -59,18 +59,36 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        // 1.1. 구독자
+
+        /**
+         * --> subscribe를 타고 올라가보면 해당 메소드가 정의되어 있다.
+         * 해당 메소드처럼 차례대로 onNext, onError, onComplete를 인자로 받는다.
+         *
+         *  @CheckReturnValue
+         * @SchedulerSupport(SchedulerSupport.NONE)
+         * public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
+         * Action onComplete)
+         * {return subscribe(onNext, onError, onComplete, Functions.emptyConsumer());}
+         *
+         */
+
+        //  구독자
+        // 1. from
+        // 배열 또는 Iterable의 요소를 순서대로 이벤트로 발생시키는 Observable
         observableFrom.subscribe(
-                str -> months.add(str),
-                throwble -> {
-                },
-                () -> adapter.setDataAndRefresh(months));
+                str -> months.add(str), //onNext
+                throwble -> {}, // onError
+                () -> adapter.setDataAndRefresh(months)); // onComplete
+
+
 
         // 2. just
+        // 누군가가 구독하게 되면, 해당 이벤트를 1번 발생시키는 것.
         Observable<String> observableJust = Observable.just("JAN", "FEB", "MAR");
         observableJust.subscribe(str -> months.add(str));
 
         //3. defer
+        // subscribe하는 순간 특정 function을 실행하고 리턴받는 Observable의 이벤트를 전달.
         Observable<String> observableDefer = Observable.defer(new Callable<ObservableSource<? extends String>>() {
             @Override
             public ObservableSource<? extends String> call() throws Exception {
